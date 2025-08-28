@@ -1,3 +1,5 @@
+// CORRECTION COMPLÈTE du fichier api.js
+
 import axios from 'axios';
 import config from './assets/config.json';
 
@@ -17,7 +19,9 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // CORRECTION : Nettoyer le token des guillemets parasites
+      const cleanToken = token.replace(/^"|"$/g, '');
+      config.headers.Authorization = `Bearer ${cleanToken}`;
     }
     return config;
   },
@@ -40,7 +44,6 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       const url = error.config?.url || '';
       // Ne pas déconnecter quand on vérifie juste si l'utilisateur est admin
-      // Un 401/403 sur /isadmin ne signifie pas que le token est invalide pour un user standard
       if (!url.includes('/isadmin')) {
         localStorage.removeItem('authToken');
         window.location.href = '/login';
@@ -52,27 +55,22 @@ apiClient.interceptors.response.use(
 
 // Fonctions pour gérer les conférences
 export const conferenceAPI = {
-  // Récupérer toutes les conférences
   getAll: async () => {
     return await apiClient.get('/conferences');
   },
 
-  // Récupérer une conférence par ID
   getById: async (id) => {
     return await apiClient.get(`/conference/${id}`);
   },
 
-  // Créer une nouvelle conférence
   create: async (conferenceData) => {
     return await apiClient.post('/conference', conferenceData);
   },
 
-  // Mettre à jour une conférence
   update: async (id, conferenceData) => {
     return await apiClient.patch(`/conference/${id}`, conferenceData);
   },
 
-  // Supprimer une conférence
   delete: async (id) => {
     await apiClient.delete(`/conference/${id}`);
     return true;
@@ -86,7 +84,9 @@ export const userAPI = {
     const data = await apiClient.post('/login', credentials);
     const token = typeof data === 'string' ? data : data?.token;
     if (token) {
-      localStorage.setItem('authToken', token);
+      // CORRECTION : Nettoyer le token avant stockage
+      const cleanToken = token.replace(/^"|"$/g, '');
+      localStorage.setItem('authToken', cleanToken);
       window.dispatchEvent(new Event('auth-changed'));
     }
     return data;
@@ -96,10 +96,11 @@ export const userAPI = {
   async signup(userData) {
     console.log('API signup called with:', userData);
     
-    // Étape 1: Créer le compte
+    // Étape 1: Créer le compte (toujours en tant que 'user')
     const signupPayload = {
       id: userData.id,
       password: userData.password
+      // Ne pas inclure le type - le serveur crée toujours en tant que 'user'
     };
 
     const response = await fetch(`${API_BASE_URL}/signup`, {
@@ -139,51 +140,22 @@ export const userAPI = {
     }
 
     const token = await loginResponse.text();
-    // Remove any extra quotes that might be wrapping the token
+    // Nettoyer le token
     const cleanToken = token.replace(/^"|"$/g, '');
-    console.log('Token obtained after signup:', cleanToken ? 'Token found' : 'No token', cleanToken?.substring(0, 20) + '...');
+    console.log('Token obtained after signup:', cleanToken ? 'Token found' : 'No token');
     
     if (cleanToken) {
       localStorage.setItem('authToken', cleanToken);
       window.dispatchEvent(new Event('auth-changed'));
     }
     
-    // Étape 3: Si le type demandé est 'admin', promouvoir l'utilisateur
-    if (userData.type === 'admin' && cleanToken) {
-      try {
-        console.log('Promoting user to admin:', userData.id);
-        console.log('Using token for promotion:', cleanToken.substring(0, 20) + '...');
-        
-        const promoteResponse = await fetch(`${API_BASE_URL}/usertype/${userData.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${cleanToken}`
-          },
-          body: JSON.stringify({ newType: 'admin' })
-        });
-
-        if (!promoteResponse.ok) {
-          const errorData = await promoteResponse.text();
-          console.error('Erreur promotion admin:', promoteResponse.status, errorData);
-          console.error('Headers sent:', {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${cleanToken.substring(0, 20)}...`
-          });
-          throw new Error(`Erreur ${promoteResponse.status}: ${errorData}`);
-        }
-        
-        console.log('User promoted to admin successfully');
-      } catch (err) {
-        console.error('Erreur lors de la promotion en admin:', err);
-        throw err;
-      }
-    }
-
+    // Plus de tentative de promotion automatique
+    // La promotion se fera manuellement via l'interface admin
+    
     return { success: true, token: cleanToken };
   },
 
-  // Récupérer tous les utilisateurs
+  // Récupérer tous les utilisateurs (nécessite authentification malgré la doc API)
   getAll: async () => {
     return await apiClient.get('/users');
   },
@@ -199,29 +171,14 @@ export const userAPI = {
     return await apiClient.patch('/userpassword', { oldPassword, password: newPassword });
   },
 
-  // Changer le type d'un utilisateur (admin/user)
+  // CORRECTION : Changer le type d'un utilisateur (admin/user) - test avec paramètre dans l'URL
   changeUserType: async (userId, newType) => {
-    const response = await fetch(`${API_BASE_URL}/usertype/${userId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      },
-      body: JSON.stringify({ newType })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Erreur changeUserType:', response.status, errorData);
-      throw new Error(`Erreur ${response.status}: ${errorData}`);
-    }
-
-    return response.json();
+    return await apiClient.patch(`/usertype/${userId}`, { newType });
   },
 
-  // Supprimer un utilisateur
+  // CORRECTION : Supprimer un utilisateur - endpoint corrigé selon la doc API  
   delete: async (userId) => {
-    await apiClient.delete(`/user/${userId}`);
+    await apiClient.delete(`/user?id=${userId}`);
     return true;
   },
 

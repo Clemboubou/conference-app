@@ -15,7 +15,7 @@ const Login = () => {
   const [signupData, setSignupData] = useState({
     id: '',
     password: '',
-    type: 'user'
+    type: 'user' // Par défaut user, la promotion se fera via l'interface admin
   });
   const navigate = useNavigate();
 
@@ -36,13 +36,21 @@ const Login = () => {
         const signupResp = await userAPI.signup(signupData);
         console.log('Signup success:', signupResp);
         setError(null);
-        setSuccess('Compte créé. Vous pouvez maintenant vous connecter.');
+        
+        // ✅ Message adapté selon le type demandé
+        if (signupData.type === 'admin') {
+          setSuccess('Compte créé en tant qu\'utilisateur. Un administrateur devra vous donner les droits admin via la page de gestion des utilisateurs.');
+        } else {
+          setSuccess('Compte créé avec succès !');
+        }
+        
+        // Passer automatiquement en mode connexion avec les identifiants
         setIsSignup(false);
-        // Remplir automatiquement les champs de connexion
         setCredentials({
           id: signupData.id,
           password: signupData.password
         });
+        
       } else {
         const signinResp = await userAPI.signin(credentials);
         console.log('Signin success:', signinResp);
@@ -80,7 +88,7 @@ const Login = () => {
     <div className="login">
       <Header />
       <main>
-        <h2>{isSignup ? 'Créer un compte Admin' : 'Connexion'}</h2>
+        <h2>{isSignup ? 'Créer un compte' : 'Connexion'}</h2>
         {error && <div className="error">{error}</div>}
         {success && <div className="success">{success}</div>}
         
@@ -115,7 +123,7 @@ const Login = () => {
           </div>
           {isSignup && (
             <div>
-              <label htmlFor="type">Type d'utilisateur:</label>
+              <label htmlFor="type">Type d'utilisateur souhaité:</label>
               <select
                 id="type"
                 name="type"
@@ -123,9 +131,15 @@ const Login = () => {
                 onChange={handleChange}
                 disabled={loading}
               >
-                <option value="admin">Administrateur</option>
                 <option value="user">Utilisateur</option>
+                <option value="admin">Administrateur (nécessite validation)</option>
               </select>
+              {signupData.type === 'admin' && (
+                <small style={{ color: '#666', fontSize: '0.9em', display: 'block', marginTop: '0.5rem' }}>
+                  Note : Votre compte sera créé en tant qu'utilisateur normal. 
+                  Un administrateur existant devra vous promouvoir via la page de gestion des utilisateurs.
+                </small>
+              )}
             </div>
           )}
           <button type="submit" disabled={loading}>
@@ -142,18 +156,19 @@ const Login = () => {
             onClick={() => {
               setIsSignup(!isSignup);
               setError(null);
+              setSuccess(null);
             }}
             style={{ 
               background: 'none', 
               border: 'none', 
-              color: 'var(--primary-color)', 
+              color: '#2563eb', 
               textDecoration: 'underline',
               cursor: 'pointer'
             }}
           >
             {isSignup 
               ? 'Déjà un compte ? Se connecter' 
-              : 'Pas de compte ? Créer un compte admin'
+              : 'Pas de compte ? Créer un compte'
             }
           </button>
         </div>
