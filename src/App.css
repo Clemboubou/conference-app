@@ -1,38 +1,466 @@
+/* CSS minimal */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: #333;
+  background: #f5f5f5;
+}
+
 .App {
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: white;
+  border-bottom: 1px solid #ddd;
+  padding: 1rem 0;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  color: #2563eb;
+}
+
+.header .logo {
+  text-decoration: none;
+}
+
+.header nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+}
+
+.header nav a {
+  text-decoration: none;
+  color: #666;
+  padding: 0.5rem 1rem;
+}
+
+.header nav a:hover {
+  color: #2563eb;
+}
+
+.logout-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Main */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+/* Conference Cards */
+.conference-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.conference-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.conference-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.conference-content {
+  padding: 1.5rem;
+}
+
+.conference-card h3 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.conference-description {
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.conference-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.conference-date {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.conference-link {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Forms */
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+form div {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.promote-btn {
+  background: #10b981;
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+/* States */
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+}
+
+.success {
+  color: #10b981;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  padding: 1rem;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Admin */
+.admin section {
+  background: white;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.admin-conference-item, .user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.user-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .header nav ul {
+    gap: 1rem;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+  
+  .conference-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-conference-item,
+  .user-item {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .user-actions {
+    justify-content: center;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+@media (max-width: 480px) {
+  .header nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  form {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Animation pour les éléments de chargement */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles pour les thèmes de conférences */
+.conference-detail {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 2rem auto;
+  max-width: 800px;
+  overflow: hidden;
+}
+
+.conference-detail-header {
+  padding: 2rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  text-align: center;
+}
+
+.conference-detail-content {
+  padding: 2rem;
+}
+
+.conference-speakers {
+  margin: 2rem 0;
+}
+
+.speaker-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 4px;
+}
+
+.speaker-name {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Amélioration des états de chargement */
+.loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 1rem;
 }
 
-.App-link {
-  color: #61dafb;
+.loading::after {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Styles spécifiques pour les pages de détail de conférence */
+.conference-date-large {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+.conference-detail-image {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 2rem auto;
+  display: block;
+}
+
+.conference-description-full {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #333;
+  margin: 2rem 0;
+}
+
+.conference-content-section {
+  margin: 3rem 0;
+  padding: 2rem;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.conference-content-section h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.conference-meta-detail {
+  display: grid;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta-item strong {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.address {
+  color: #666;
+  line-height: 1.4;
+}
+
+.speakers-grid, .stakeholders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stakeholder-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stakeholder-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.stakeholder-info {
+  flex: 1;
+}
+
+.stakeholder-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.stakeholder-job {
+  color: #666;
+  font-size: 0.875rem;
 }
